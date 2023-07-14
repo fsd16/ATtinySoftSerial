@@ -11,6 +11,7 @@ Single-instance software serial library for ATtiny84A, modified from Arduino Sof
 -- 20MHz processor support by Garrett Mace (http://www.macetech.com)
 -- ATmega1280/2560 support by Brett Hagman (http://www.roguerobotics.com/)
 -- Port to ATtiny84A / C by Michael Shimniok (http://www.bot-thoughts.com/)
+-- Port to ATtiny88 / C by Michael Shimniok
 
 Notes on the ATtiny84A port. To save space I've:
  - Converted back to C

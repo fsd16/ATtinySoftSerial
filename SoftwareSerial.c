@@ -147,6 +147,52 @@ static const DELAY_TABLE PROGMEM table[] =
 
 const int XMIT_START_ADJUSTMENT = 5;
 
+// #elif F_CPU ==20000000
+
+// static const DELAY_TABLE PROGMEM table[] =
+// {
+//     //  baud    rxcenter   rxintra    rxstop    tx
+//     { 115200,   1,         21,        21,       16,    },
+//     { 57600,    13,        41,        41,       37,    },
+//     { 38400,    29,        61,        61,       58,    },
+//     { 31250,    37,        76,        76,       73,    },
+//     { 28800,    41,        83,        83,       80,    },
+//     { 19200,    64,        126,       126,      123,   },
+//     { 14400,    88,        167,       167,      164,   },
+//     { 9600,     135,       253,       253,      250,   },
+//     { 4800,     277,       511,       511,      508,   },
+//     { 2400,     563,       1028,      1028,     1025,  },
+//     { 1200,     1135,      2056,      2056,     2053,  },
+//     { 600,      2280,      4114,      4114,     4110,  },
+//     { 300,      4591,      8232,      8232,     8229,  },
+// };
+
+// const int XMIT_START_ADJUSTMENT = 6;
+
+#elif F_CPU == 20000000
+
+// 20MHz support courtesy of the good people at macegr.com.
+// Thanks, Garrett!
+
+static const DELAY_TABLE PROGMEM table[] =
+{
+  //  baud    rxcenter    rxintra    rxstop  tx
+  { 115200,   3,          21,        21,     18,     },
+  { 57600,    20,         43,        43,     41,     },
+  { 38400,    37,         73,        73,     70,     },
+  { 31250,    45,         89,        89,     88,     },
+  { 28800,    46,         98,        98,     95,     },
+  { 19200,    71,         148,       148,    145,    },
+  { 14400,    96,         197,       197,    194,    },
+  { 9600,     146,        297,       297,    294,    },
+  { 4800,     296,        595,       595,    592,    },
+  { 2400,     592,        1189,      1189,   1186,   },
+  { 1200,     1187,       2379,      2379,   2376,   },
+  { 300,      4759,       9523,      9523,   9520,   },
+};
+
+const int XMIT_START_ADJUSTMENT = 6;
+
 #endif
 
 //
@@ -228,8 +274,8 @@ void softSerialBegin(long speed) {
 			_rx_delay_stopbit = pgm_read_word(&table[i].rx_delay_stopbit);
 			_tx_delay = pgm_read_word(&table[i].tx_delay);
 			// Set up RX interrupts, but only if we have a valid RX baud rate
-			GIMSK |= (1<<PCIE);
-			PCMSK |= (1<<RXPIN);
+			PCICR |= (1<<PCIE0); // Attiny88 uses PCICR instead of GIMSK and PCIE0 instead of PCIE
+			PCMSK0 |= (1<<RXPIN); // Attiny88 uses PCMSK0 instead of PCMSK
 			tunedDelay(_tx_delay);
 			sei();
 			return;
@@ -241,7 +287,7 @@ void softSerialBegin(long speed) {
 }
 
 void softSerialEnd() {
-	PCMSK = 0;
+	PCMSK0 = 0; // Attiny88 uses PCMSK0 instead of PCMSK
 }
 
 // Read data from buffer

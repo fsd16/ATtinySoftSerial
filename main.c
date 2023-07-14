@@ -1,13 +1,15 @@
 /*
  * main.c - example for using TinySoftSerial for ATtiny
  *
- * Created: 5/8/2018 3:47:42 PM
- * Author : Michael Shimniok
+ * Created: 14/07/2023
+ * Author : Finn Drabsch
  */ 
 
 #include <avr/io.h>
 #include <util/delay.h>
 #include "SoftwareSerial.h"
+#include "pins.h"
+#include "attiny88.h"
 
 // incoming buffer
 volatile char *inbuf[32];
@@ -16,12 +18,20 @@ volatile char *outbuf[32];
 
 int main()
 {
-	softSerialBegin(38400);
+	// Set built-in LED pin as output
+    pin_config(LED, OUTPUT);
+
+	softSerialBegin(9600);
+	
 	while (1) {
+
+
 		if (softSerialAvailable()) {
+			pin_set(LED, HIGH);
 			softSerialWrite( softSerialRead() );
 			_delay_ms(10);
 		}
 	}
 }
+
 

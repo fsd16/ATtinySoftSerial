@@ -1,0 +1,108 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "echo",
+            "type": "shell",
+            "command": "echo Hello"
+        },
+        {
+            "label": "AVR-GCC Build",
+            "type": "shell",
+            "command": "avr-gcc",
+            "args": [
+                
+                "-mmcu=attiny88",
+                "-DF_CPU=20000000UL",
+                "-Wall",
+                "-Ofast",
+                // "-I",
+                // "/home/fdrabsch/projects/libraries/printf/src/printf/",
+                "-I",
+                "/home/fdrabsch/projects/libraries/boards/",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}.elf",
+                "${workspaceFolder}/*.c",
+                // "/home/fdrabsch/projects/libraries/printf/src/printf/*.c",
+                "/home/fdrabsch/projects/libraries/boards/*.c"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
+        },
+        {
+            "label": "AVR Hex",
+            "dependsOn": ["AVR-GCC Build"],
+            "dependsOrder": "sequence",
+            "type": "shell",
+            "command": "avr-objcopy",
+            "args": [
+                "-O",
+                "ihex",
+                "${fileDirname}/${fileBasenameNoExtension}.elf",
+                "${fileDirname}/${fileBasenameNoExtension}.hex",
+            ]
+        },
+        // {
+        //     "label": "AVR-GCC Build and Upload (avrdude-arduino)",
+        //     "dependsOn": ["AVR Hex"],
+        //     "dependsOrder": "sequence",
+        //     "type": "shell",
+        //     "command": "/mnt/c/ProgrammingTools/avrdude-mariusgreuel/avrdude.exe",
+        //     "args": [
+        //         "-c",
+        //         "arduino",
+        //         "-p",
+        //         "attiny88",
+        //         "-c",
+        //         "ft232",
+        //         "-P",
+        //         "COM3",
+        //         "-U",
+        //         "flash:w:${fileDirname}/${fileBasenameNoExtension}.hex:i"
+        //     ],
+        //     "group": {
+        //         "kind": "build",
+        //         "isDefault": true
+        //     }
+        // },
+        {
+            "label": "AVR-GCC Build and Upload (avrdude-micronucleus)",
+            "dependsOn": ["AVR Hex"],
+            "dependsOrder": "sequence",
+            "type": "shell",
+            "command": "/mnt/c/ProgrammingTools/avrdude-mariusgreuel/avrdude.exe",
+            "args": [
+                "-c",
+                "micronucleus",
+                "-p",
+                "attiny88",
+                "-x",
+                "wait",
+                "-V",
+                "-U",
+                "flash:w:${fileDirname}/${fileBasenameNoExtension}.hex:i"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        // {
+        //     "label": "AVR-GCC Build and Upload (micronucleus)",
+        //     "dependsOn": ["AVR Hex"],
+        //     "dependsOrder": "sequence",
+        //     "type": "shell",
+        //     "command": "/mnt/c/ProgrammingTools/micronucleus/micronucleus.exe",
+        //     "args": [
+        //         "${fileBasenameNoExtension}.hex"
+        //     ],
+        //     "group": {
+        //         "kind": "build",
+        //         "isDefault": true
+        //     }
+        // }
+    ]
+}
